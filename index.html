@@ -1,0 +1,873 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>美股笔记</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background: #f5f7fa;
+            font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        /* 标题样式 */
+        .header {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 30px;
+        }
+
+        .title-bar {
+            width: 4px;
+            height: 24px;
+            background: #0066ff;
+            margin-right: 8px;
+            border-radius: 2px;
+            margin-top: 4px;
+        }
+
+        .title-content h1 {
+            font-size: 24px;
+            margin: 0;
+            color: #1a1a1a;
+        }
+
+        .subtitle {
+            font-size: 14px;
+            color: #666;
+            margin-top: 4px;
+        }
+
+        /* 一级标签页样式 */
+        .tabs {
+            border-bottom: 1px solid #e4e7ed;
+            margin-bottom: 20px;
+        }
+
+        .tab-button {
+            padding: 12px 0;
+            margin-right: 32px;
+            border: none;
+            background: none;
+            font-size: 14px;
+            color: #666;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .tab-button.active {
+            color: #0066ff;
+        }
+
+        .tab-button.active::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: #0066ff;
+        }
+
+        /* 二级日期导航样式 */
+        .date-nav {
+            margin: 20px 0;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .date-button {
+            padding: 6px 16px;
+            border: none;
+            background: none;
+            border-radius: 16px;
+            font-size: 14px;
+            color: #666;
+            cursor: pointer;
+            position: relative;
+            padding-right: 28px;
+        }
+
+        .date-button.active {
+            background: #0066ff;
+            color: white;
+        }
+
+        .date-delete {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: rgba(0,0,0,0.1);
+            color: #666;
+            font-size: 12px;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .date-button:hover .date-delete {
+            display: flex;
+        }
+
+        .date-delete:hover {
+            background: rgba(0,0,0,0.2);
+        }
+
+        .add-date-button {
+            padding: 6px 16px;
+            border: 1px dashed #0066ff;
+            background: none;
+            border-radius: 16px;
+            font-size: 14px;
+            color: #0066ff;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .add-date-button:hover {
+            background: rgba(0, 102, 255, 0.05);
+        }
+
+        /* 内容区域样式 */
+        .content-card {
+            background: white;
+            border-radius: 8px;
+            padding: 24px;
+            margin-bottom: 20px;
+            border: 1px solid #eee;
+        }
+
+        .data-item {
+            margin-bottom: 24px;
+            position: relative;
+        }
+
+        .data-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .data-item-title {
+            font-size: 15px;
+            color: #1a1a1a;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+        }
+
+        .data-item-title span {
+            color: #0066ff;
+            margin-right: 8px;
+        }
+
+        .data-detail {
+            color: #666;
+            line-height: 1.8;
+            font-size: 14px;
+        }
+
+        .data-detail p {
+            margin: 8px 0;
+            position: relative;
+        }
+
+        /* 行内添加按钮样式 */
+        .add-line-button {
+            position: absolute;
+            left: -30px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #f5f7fa;
+            border: 1px dashed #ddd;
+            color: #666;
+            font-size: 14px;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .data-detail p:hover .add-line-button {
+            display: flex;
+        }
+
+        .add-line-button:hover {
+            border-color: #0066ff;
+            color: #0066ff;
+            background: white;
+        }
+
+        /* 新增行按钮样式 */
+        .add-row-button {
+            display: inline-flex;
+            align-items: center;
+            padding: 6px 12px;
+            border: 1px dashed #ddd;
+            border-radius: 4px;
+            background: none;
+            color: #666;
+            font-size: 13px;
+            cursor: pointer;
+            margin-top: 12px;
+            transition: all 0.3s;
+        }
+
+        .add-row-button:hover {
+            border-color: #0066ff;
+            color: #0066ff;
+        }
+
+        .highlight-red {
+            color: #f23030;
+        }
+
+        /* 图片上传区域 */
+        .image-area {
+            margin-top: 16px;
+            width: 200px;
+            height: 120px;
+            border: 1px dashed #ddd;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: #666;
+            font-size: 13px;
+            transition: all 0.3s;
+        }
+
+        .image-area:hover {
+            border-color: #0066ff;
+            color: #0066ff;
+        }
+
+        /* 图片下方内容区域 */
+        .after-image-content {
+            margin-top: 12px;
+            min-height: 24px;
+        }
+
+        /* 日期输入弹窗样式 */
+        .date-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .date-modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 24px;
+            border-radius: 12px;
+            width: 300px;
+        }
+
+        .modal-title {
+            font-size: 16px;
+            margin-bottom: 16px;
+            color: #1a1a1a;
+        }
+
+        .modal-input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            margin-bottom: 16px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+        }
+
+        .modal-button {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .modal-cancel {
+            background: #f5f5f5;
+            color: #666;
+        }
+
+        .modal-confirm {
+            background: #0066ff;
+            color: white;
+        }
+
+        /* 文本编辑工具栏 */
+        .text-toolbar {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+            padding: 12px;
+            display: flex;
+            gap: 12px;
+            z-index: 1000;
+        }
+
+        .toolbar-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .toolbar-label {
+            font-size: 13px;
+            color: #666;
+        }
+
+        .toolbar-select {
+            padding: 4px 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 13px;
+            color: #333;
+        }
+
+        .color-picker {
+            width: 30px;
+            height: 24px;
+            padding: 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        /* 文本格式按钮 */
+        .format-button {
+            padding: 4px 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background: white;
+            color: #333;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.3s;
+        }
+
+        .format-button:hover {
+            background: #f5f7fa;
+        }
+
+        .format-button.active {
+            background: #0066ff;
+            color: white;
+            border-color: #0066ff;
+        }
+
+        /* 可编辑区域样式 */
+        [contenteditable="true"] {
+            outline: none;
+            padding: 2px 4px;
+            border-radius: 4px;
+            transition: background 0.3s;
+        }
+
+        [contenteditable="true"]:hover {
+            background: rgba(0, 102, 255, 0.05);
+        }
+
+        [contenteditable="true"]:focus {
+            background: rgba(0, 102, 255, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 标题区域 -->
+        <div class="header">
+            <div class="title-bar"></div>
+            <div class="title-content">
+                <h1 contenteditable="true">美股笔记</h1>
+                <div class="subtitle" contenteditable="true">记录学习美股市场情况</div>
+            </div>
+        </div>
+
+        <!-- 一级标签页 -->
+        <div class="tabs">
+            <button class="tab-button active">美股数据</button>
+            <button class="tab-button">宏观数据</button>
+            <button class="tab-button">头条</button>
+        </div>
+
+        <!-- 二级日期导航 -->
+        <div class="date-nav">
+            <button class="date-button active">(美东) 1月7日
+                <span class="date-delete">×</span>
+            </button>
+            <button class="date-button">(美东) 1月6日
+                <span class="date-delete">×</span>
+            </button>
+            <button class="date-button">(美东) 1月5日
+                <span class="date-delete">×</span>
+            </button>
+            <button class="date-button">(美东) 1月4日
+                <span class="date-delete">×</span>
+            </button>
+            <button class="date-button">(美东) 1月3日
+                <span class="date-delete">×</span>
+            </button>
+            <button class="add-date-button">+ 新增日期</button>
+        </div>
+
+        <!-- 内容区域 -->
+        <div class="content-section">
+            <!-- 内容将通过 JavaScript 动态更新 -->
+        </div>
+    </div>
+
+    <!-- 日期输入弹窗 -->
+    <div class="date-modal">
+        <div class="modal-content">
+            <div class="modal-title">新增日期</div>
+            <input type="text" class="modal-input" placeholder="请输入日期，例：1月8日">
+            <div class="modal-buttons">
+                <button class="modal-button modal-cancel">取消</button>
+                <button class="modal-button modal-confirm">确定</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 文本编辑工具栏 -->
+    <div class="text-toolbar">
+        <div class="toolbar-item">
+            <span class="toolbar-label">字体颜色</span>
+            <input type="color" class="color-picker" id="textColor">
+        </div>
+        <div class="toolbar-item">
+            <span class="toolbar-label">字体大小</span>
+            <select class="toolbar-select" id="fontSize">
+                <option value="12px">12px</option>
+                <option value="13px">13px</option>
+                <option value="14px" selected>14px</option>
+                <option value="16px">16px</option>
+                <option value="18px">18px</option>
+                <option value="20px">20px</option>
+            </select>
+        </div>
+        <div class="toolbar-item">
+            <span class="toolbar-label">行距</span>
+            <select class="toolbar-select" id="lineHeight">
+                <option value="1.4">1.4</option>
+                <option value="1.6">1.6</option>
+                <option value="1.8" selected>1.8</option>
+                <option value="2">2.0</option>
+                <option value="2.2">2.2</option>
+            </select>
+        </div>
+        <div class="toolbar-item">
+            <button class="format-button" id="boldButton" title="加粗">B</button>
+            <button class="format-button" id="italicButton" title="斜体">I</button>
+        </div>
+    </div>
+    <script>
+        // 当前选中的标签和日期
+        let currentTab = 'us-stocks';
+        let currentDate = '0107';
+    
+        // 创建新日期的模板内容
+        function createTemplateContent(date) {
+            return `
+                <!-- 核心数据 -->
+                <div class="content-card">
+                    <div class="data-item">
+                        <div class="data-item-title">
+                            <span>1)</span>
+                            <div contenteditable="true">新增数据标题</div>
+                        </div>
+                        <div class="data-detail">
+                            <p contenteditable="true"><span class="add-line-button">+</span>>添加核心数据...</p>
+                            <p contenteditable="true"><span class="add-line-button">+</span>>添加数据解读...</p>
+                            <p contenteditable="true"><span class="add-line-button">+</span>>添加其他信息...</p>
+                            <div class="image-area">点击上传图片</div>
+                            <p class="after-image-content" contenteditable="true"></p>
+                            <button class="add-row-button">+ 新增一行</button>
+                        </div>
+                    </div>
+                </div>
+                <!-- 市场声音 -->
+                <div class="content-card">
+                    <div class="data-item">
+                        <div class="data-item-title">市场声音</div>
+                        <div class="data-detail">
+                            <p contenteditable="true"><span class="add-line-button">+</span>1. 添加市场动态...</p>
+                            <p contenteditable="true"><span class="add-line-button">+</span>2. 添加市场信息...</p>
+                            <p contenteditable="true"><span class="add-line-button">+</span>3. 添加市场分析...</p>
+                            <div class="image-area">点击上传图片</div>
+                            <p class="after-image-content" contenteditable="true"></p>
+                            <button class="add-row-button">+ 新增一行</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+    
+        // 内容数据结构
+        const contentData = {
+            'us-stocks': {
+                '0107': {
+                    title: '美股数据 - 1月7日',
+                    content: `
+                        <!-- 核心数据 -->
+                        <div class="content-card">
+                            <div class="data-item">
+                                <div class="data-item-title">
+                                    <span>1)</span>
+                                    <div contenteditable="true">美国11月JOLTs职位空缺(万人)</div>
+                                </div>
+                                <div class="data-detail">
+                                    <p contenteditable="true"><span class="add-line-button">+</span>>公布值809.8，预测值770，前值774.4。</p>
+                                    <p contenteditable="true"><span class="add-line-button">+</span>>解读：就业数据好于预期，经济数据强劲，通胀预期提升</p>
+                                    <p contenteditable="true"><span class="add-line-button">+</span>>发布时间：每月公布，下次为2月4日，重要性3⭐</p>
+                                    <p contenteditable="true"><span class="add-line-button">+</span>>定义：JOLTs，全称为职位空缺和劳工流动调查报告...</p>
+                                    <div class="image-area">点击上传图片</div>
+                                    <p class="after-image-content" contenteditable="true"></p>
+                                    <button class="add-row-button">+ 新增一行</button>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- 市场声音 -->
+                        <div class="content-card">
+                            <div class="data-item">
+                                <div class="data-item-title">市场声音</div>
+                                <div class="data-detail">
+                                    <p contenteditable="true"><span class="add-line-button">+</span>1. 美联储官员发布重要讲话：货币政策将继续保持谨慎...</p>
+                                    <p contenteditable="true"><span class="add-line-button">+</span>2. 特斯拉产能持续提升，市场份额稳步增长...</p>
+                                    <p contenteditable="true"><span class="add-line-button">+</span>3. 科技股整体表现活跃，AI概念持续发酵...</p>
+                                    <div class="image-area">点击上传图片</div>
+                                    <p class="after-image-content" contenteditable="true"></p>
+                                    <button class="add-row-button">+ 新增一行</button>
+                                </div>
+                            </div>
+                        </div>
+                    `
+                }
+            }
+        };
+    
+        // 更新内容区域
+        function updateContent() {
+            const contentSection = document.querySelector('.content-section');
+            const data = contentData[currentTab]?.[currentDate];
+            
+            if (data) {
+                contentSection.innerHTML = data.content;
+                initImageUpload();
+                initAddLineButtons();
+                initAddRowButtons();
+            }
+        }
+    
+        // 初始化新行添加按钮
+        function initAddLineButtons() {
+            document.querySelectorAll('.add-line-button').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const parentP = e.target.parentElement;
+                    const newP = document.createElement('p');
+                    newP.contentEditable = true;
+                    newP.innerHTML = `<span class="add-line-button">+</span>`;
+                    parentP.parentNode.insertBefore(newP, parentP.nextSibling);
+                    newP.focus();
+                });
+            });
+        }
+    
+        // 初始化底部新增行按钮
+        function initAddRowButtons() {
+            document.querySelectorAll('.add-row-button').forEach(button => {
+                button.addEventListener('click', () => {
+                    const dataDetail = button.closest('.data-detail');
+                    const newP = document.createElement('p');
+                    newP.contentEditable = true;
+                    newP.innerHTML = `<span class="add-line-button">+</span>`;
+                    button.insertAdjacentElement('beforebegin', newP);
+                    newP.focus();
+                });
+            });
+        }
+    
+        // 图片上传功能
+        function initImageUpload() {
+            document.querySelectorAll('.image-area').forEach(area => {
+                area.addEventListener('click', () => {
+                    const input = document.createElement('input');
+                    input.type = 'file';
+                    input.accept = 'image/*';
+                    
+                    input.onchange = (e) => {
+                        const file = e.target.files[0];
+                        if (file) {
+                            const reader = new FileReader();
+                            reader.onload = (e) => {
+                                area.innerHTML = `<img src="${e.target.result}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;">`;
+                                area.style.border = 'none';
+                            };
+                            reader.readAsDataURL(file);
+                        }
+                    };
+                    
+                    input.click();
+                });
+            });
+        }
+    
+        // 文本编辑功能
+        function initTextEditing() {
+            const textColor = document.getElementById('textColor');
+            const fontSize = document.getElementById('fontSize');
+            const lineHeight = document.getElementById('lineHeight');
+            const boldButton = document.getElementById('boldButton');
+            const italicButton = document.getElementById('italicButton');
+    
+            // 监听可编辑元素的选中
+            document.addEventListener('selectionchange', () => {
+                const selection = window.getSelection();
+                if (selection.rangeCount > 0) {
+                    const range = selection.getRangeAt(0);
+                    const container = range.commonAncestorContainer.parentElement;
+                    
+                    if (container && container.hasAttribute('contenteditable')) {
+                        const computedStyle = window.getComputedStyle(container);
+                        textColor.value = rgbToHex(computedStyle.color);
+                        fontSize.value = computedStyle.fontSize;
+                        lineHeight.value = computedStyle.lineHeight;
+                        
+                        boldButton.classList.toggle('active', computedStyle.fontWeight === 'bold');
+                        italicButton.classList.toggle('active', computedStyle.fontStyle === 'italic');
+                    }
+                }
+            });
+    
+            // 颜色修改
+            textColor.addEventListener('change', (e) => {
+                document.execCommand('foreColor', false, e.target.value);
+            });
+    
+            // 字体大小修改
+            fontSize.addEventListener('change', (e) => {
+                const selection = window.getSelection();
+                if (selection.rangeCount > 0) {
+                    const range = selection.getRangeAt(0);
+                    const container = range.commonAncestorContainer.parentElement;
+                    if (container && container.hasAttribute('contenteditable')) {
+                        container.style.fontSize = e.target.value;
+                    }
+                }
+            });
+    
+            // 行距修改
+            lineHeight.addEventListener('change', (e) => {
+                const selection = window.getSelection();
+                if (selection.rangeCount > 0) {
+                    const range = selection.getRangeAt(0);
+                    const container = range.commonAncestorContainer.parentElement;
+                    if (container && container.hasAttribute('contenteditable')) {
+                        container.style.lineHeight = e.target.value;
+                    }
+                }
+            });
+    
+            // 加粗
+            boldButton.addEventListener('click', () => {
+                document.execCommand('bold', false, null);
+                boldButton.classList.toggle('active');
+            });
+    
+            // 斜体
+            italicButton.addEventListener('click', () => {
+                document.execCommand('italic', false, null);
+                italicButton.classList.toggle('active');
+            });
+        }
+    
+        // RGB颜色转十六进制
+        function rgbToHex(rgb) {
+            const rgbArray = rgb.match(/\d+/g);
+            if (!rgbArray) return '#000000';
+            const r = parseInt(rgbArray[0]);
+            const g = parseInt(rgbArray[1]);
+            const b = parseInt(rgbArray[2]);
+            return '#' + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
+        }
+    
+        // 处理新增日期
+        const modal = document.querySelector('.date-modal');
+        const dateInput = document.querySelector('.modal-input');
+        const addDateButton = document.querySelector('.add-date-button');
+        const cancelButton = document.querySelector('.modal-cancel');
+        const confirmButton = document.querySelector('.modal-confirm');
+    
+        // 打开弹窗
+        addDateButton.addEventListener('click', () => {
+            modal.classList.add('active');
+            dateInput.value = '';
+            dateInput.focus();
+        });
+    
+        // 关闭弹窗
+        cancelButton.addEventListener('click', () => {
+            modal.classList.remove('active');
+        });
+    
+        // 确认添加新日期
+        confirmButton.addEventListener('click', () => {
+            const dateText = dateInput.value.trim();
+            if (dateText) {
+                // 创建新的日期按钮
+                const newDateButton = document.createElement('button');
+                newDateButton.className = 'date-button';
+                
+                // 添加删除图标
+                const deleteIcon = document.createElement('span');
+                deleteIcon.className = 'date-delete';
+                deleteIcon.innerHTML = '×';
+                deleteIcon.onclick = (e) => {
+                    e.stopPropagation();
+                    if (confirm('确定要删除这个日期吗？')) {
+                        delete contentData[currentTab][dateId];
+                        newDateButton.remove();
+                        
+                        const firstDateButton = document.querySelector('.date-button');
+                        if (firstDateButton) {
+                            firstDateButton.click();
+                        }
+                    }
+                };
+                
+                newDateButton.textContent = `(美东) ${dateText}`;
+                newDateButton.appendChild(deleteIcon);
+                
+                // 插入到第一个位置
+                const dateNav = document.querySelector('.date-nav');
+                const firstButton = dateNav.querySelector('.date-button');
+                dateNav.insertBefore(newDateButton, firstButton);
+    
+                // 为新日期创建内容模板
+                const dateId = Date.now().toString();
+                if (!contentData[currentTab]) {
+                    contentData[currentTab] = {};
+                }
+                contentData[currentTab][dateId] = {
+                    title: `${currentTab} - ${dateText}`,
+                    content: createTemplateContent(dateText)
+                };
+    
+                // 绑定点击事件
+                newDateButton.addEventListener('click', () => {
+                    document.querySelectorAll('.date-button').forEach(btn => 
+                        btn.classList.remove('active'));
+                    newDateButton.classList.add('active');
+                    currentDate = dateId;
+                    updateContent();
+                });
+    
+                // 自动点击新创建的日期按钮
+                newDateButton.click();
+            }
+            modal.classList.remove('active');
+        });
+    
+        // 支持回车确认
+        dateInput.addEventListener('keyup', (e) => {
+            if (e.key === 'Enter') {
+                confirmButton.click();
+            }
+        });
+    
+        // 一级标签切换
+        document.querySelectorAll('.tab-button').forEach((button, index) => {
+            button.addEventListener('click', () => {
+                document.querySelectorAll('.tab-button').forEach(btn => 
+                    btn.classList.remove('active'));
+                button.classList.add('active');
+    
+                const tabs = ['us-stocks', 'macro', 'headlines'];
+                currentTab = tabs[index];
+                
+                updateContent();
+            });
+        });
+    
+        // 二级日期切换
+        document.querySelectorAll('.date-button').forEach((button, index) => {
+            button.addEventListener('click', () => {
+                document.querySelectorAll('.date-button').forEach(btn => 
+                    btn.classList.remove('active'));
+                button.classList.add('active');
+    
+                const dates = ['0107', '0106', '0105', '0104', '0103'];
+                currentDate = dates[index];
+                
+                updateContent();
+            });
+    
+            // 删除功能
+            const deleteBtn = button.querySelector('.date-delete');
+            if (deleteBtn) {
+                deleteBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    if (confirm('确定要删除这个日期吗？')) {
+                        delete contentData[currentTab][currentDate];
+                        button.remove();
+                        
+                        const firstDateButton = document.querySelector('.date-button');
+                        if (firstDateButton) {
+                            firstDateButton.click();
+                        }
+                    }
+                });
+            }
+        });
+    
+        // 初始化
+        updateContent();
+        initImageUpload();
+        initTextEditing();
+        initAddLineButtons();
+        initAddRowButtons();
+    </script>
+    </body>
+    </html>

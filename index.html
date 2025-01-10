@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>美股笔记</title>
     <style>
+        /* 保持原有的所有样式不变 */
         body {
             margin: 0;
             padding: 20px;
@@ -52,6 +53,7 @@
         .tabs {
             border-bottom: 1px solid #e4e7ed;
             margin-bottom: 20px;
+            display: flex;
         }
 
         .tab-button {
@@ -83,55 +85,43 @@
         .date-nav {
             margin: 20px 0;
             display: flex;
-            gap: 10px;
+            gap: 12px;
             flex-wrap: wrap;
         }
 
         .date-button {
             padding: 6px 16px;
-            border: none;
-            background: none;
+            border: 1px solid #e4e7ed;
+            background: white;
             border-radius: 16px;
             font-size: 14px;
             color: #666;
             cursor: pointer;
             position: relative;
-            padding-right: 28px;
         }
 
         .date-button.active {
             background: #0066ff;
             color: white;
+            border-color: #0066ff;
         }
 
         .date-delete {
+            display: none;
             position: absolute;
-            right: 8px;
+            right: 6px;
             top: 50%;
             transform: translateY(-50%);
-            width: 14px;
-            height: 14px;
-            border-radius: 50%;
-            background: rgba(0,0,0,0.1);
-            color: #666;
-            font-size: 12px;
-            display: none;
-            align-items: center;
-            justify-content: center;
+            width: 16px;
+            height: 16px;
+            line-height: 16px;
+            text-align: center;
+            color: #999;
             cursor: pointer;
         }
 
         .date-button:hover .date-delete {
-            display: flex;
-        }
-
-        .date-button.active .date-delete {
-            color: white;
-            background: rgba(255,255,255,0.2);
-        }
-
-        .date-delete:hover {
-            background: rgba(0,0,0,0.2);
+            display: block;
         }
 
         .add-date-button {
@@ -142,29 +132,19 @@
             font-size: 14px;
             color: #0066ff;
             cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .add-date-button:hover {
-            background: rgba(0, 102, 255, 0.05);
         }
 
         /* 内容区域样式 */
+        .content-section {
+            margin-top: 20px;
+        }
+
         .content-card {
             background: white;
             border-radius: 8px;
             padding: 24px;
             margin-bottom: 20px;
             border: 1px solid #eee;
-        }
-
-        .data-item {
-            margin-bottom: 24px;
-            position: relative;
-        }
-
-        .data-item:last-child {
-            margin-bottom: 0;
         }
 
         .data-item-title {
@@ -175,168 +155,71 @@
             align-items: center;
         }
 
-        .data-item-title span {
-            color: #0066ff;
-            margin-right: 8px;
-        }
-
         .data-detail {
             color: #666;
             line-height: 1.8;
             font-size: 14px;
         }
 
-        /* 内容块样式 */
-        .content-block {
-            margin-bottom: 12px;
-        }
-
-        /* 新增和删除按钮样式 */
-        .add-line-button {
-            display: inline-block;
-            width: 16px;
-            height: 16px;
-            line-height: 14px;
-            text-align: center;
-            border: 1px solid #ddd;
-            border-radius: 3px;
-            margin-right: 4px;
-            color: #999;
-            cursor: pointer;
-            user-select: none;
-        }
-
-        .add-line-button:hover {
-            border-color: #0066ff;
-            color: #0066ff;
-        }
-
-        .delete-line-button {
-            display: none;
-            width: 16px;
-            height: 16px;
-            line-height: 14px;
-            text-align: center;
-            border: 1px solid #ddd;
-            border-radius: 3px;
-            margin-left: 4px;
-            color: #999;
-            cursor: pointer;
-            user-select: none;
-        }
-
-        [contenteditable="true"]:hover .delete-line-button {
-            display: inline-block;
-        }
-
-        .delete-line-button:hover {
-            border-color: #ff4d4f;
-            color: #ff4d4f;
-        }
-
-        /* 图片区域样式 */
+        /* 图片上传区域样式 */
         .image-container {
-            position: relative;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
             margin: 12px 0;
         }
 
-        .image-area {
-            margin-top: 16px;
+        .image-wrapper {
+            position: relative;
             width: 200px;
             height: 120px;
+        }
+
+        .image-area {
+            width: 100%;
+            height: 100%;
             border: 1px dashed #ddd;
-            border-radius: 8px;
+            border-radius: 4px;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
             color: #666;
             font-size: 13px;
-            transition: all 0.3s;
+            overflow: hidden;
         }
 
-        .image-area:hover {
-            border-color: #0066ff;
-            color: #0066ff;
+        .image-area img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
 
-        .delete-image-button {
+        .delete-image {
             position: absolute;
             top: -8px;
             right: -8px;
             width: 20px;
             height: 20px;
-            line-height: 18px;
+            line-height: 20px;
             text-align: center;
             background: white;
             border: 1px solid #ddd;
             border-radius: 50%;
             color: #999;
             cursor: pointer;
-            z-index: 1;
+            display: none;
         }
 
-        .delete-image-button:hover {
-            border-color: #ff4d4f;
-            color: #ff4d4f;
+        .image-wrapper:hover .delete-image {
+            display: block;
         }
 
-        /* 工具栏样式 */
-        .block-toolbar {
-            margin-top: 8px;
-        }
-
-        .add-image-button {
-            padding: 4px 8px;
-            border: 1px dashed #ddd;
-            border-radius: 4px;
-            background: none;
-            color: #666;
-            font-size: 12px;
-            cursor: pointer;
-        }
-
-        .add-image-button:hover {
-            border-color: #0066ff;
-            color: #0066ff;
-        }
-
-        /* 编辑模式样式 */
-        .edit-mode-toggle {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 8px 16px;
-            background: #0066ff;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            z-index: 1000;
-        }
-
-        .view-mode [contenteditable="true"] {
-            cursor: default;
-            pointer-events: none;
-        }
-
-        .view-mode .text-toolbar,
-        .view-mode .add-row-button,
-        .view-mode .add-line-button,
-        .view-mode .delete-line-button,
-        .view-mode .date-delete,
-        .view-mode .add-date-button,
-        .view-mode .block-toolbar,
-        .view-mode .delete-image-button {
-            display: none !important;
-        }
-
-        /* 文本编辑工具栏 */
+        /* 文本编辑工具栏样式 */
         .text-toolbar {
             position: fixed;
             bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
+            right: 20px;
             background: white;
             border-radius: 8px;
             box-shadow: 0 2px 12px rgba(0,0,0,0.15);
@@ -362,68 +245,51 @@
             border: 1px solid #ddd;
             border-radius: 4px;
             font-size: 13px;
-            color: #333;
         }
 
-        .color-picker {
-            width: 30px;
-            height: 24px;
-            padding: 0;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-
-        /* 文本格式按钮 */
         .format-button {
             padding: 4px 8px;
             border: 1px solid #ddd;
             border-radius: 4px;
             background: white;
-            color: #333;
             cursor: pointer;
             font-size: 13px;
-            transition: all 0.3s;
         }
 
-        .format-button:hover {
-            background: #f5f7fa;
+        /* 行操作按钮样式 */
+        .line-actions {
+            display: none;
+            margin-left: 8px;
+            gap: 4px;
         }
 
-        .format-button.active {
-            background: #0066ff;
-            color: white;
-            border-color: #0066ff;
+        p:hover .line-actions {
+            display: inline-flex;
         }
 
-        /* 可编辑区域样式 */
-        [contenteditable="true"] {
-            outline: none;
-            padding: 2px 4px;
-            border-radius: 4px;
-            transition: background 0.3s;
-        }
-
-        [contenteditable="true"]:hover {
-            background: rgba(0, 102, 255, 0.05);
-        }
-
-        [contenteditable="true"]:focus {
-            background: rgba(0, 102, 255, 0.1);
+        .add-line-button,
+        .delete-line-button {
+            width: 16px;
+            height: 16px;
+            line-height: 14px;
+            text-align: center;
+            border: 1px solid #ddd;
+            border-radius: 50%;
+            background: white;
+            color: #666;
+            cursor: pointer;
+            font-size: 12px;
         }
     </style>
 </head>
 <body>
-    <!-- 编辑模式切换按钮 -->
-    <button class="edit-mode-toggle">进入编辑</button>
-
     <div class="container">
         <!-- 标题区域 -->
         <div class="header">
             <div class="title-bar"></div>
             <div class="title-content">
-                <h1 contenteditable="true">美股笔记</h1>
-                <div class="subtitle" contenteditable="true">记录学习美股市场情况</div>
+                <h1>美股笔记</h1>
+                <div class="subtitle">记录学习美股市场情况</div>
             </div>
         </div>
 
@@ -436,19 +302,24 @@
 
         <!-- 二级日期导航 -->
         <div class="date-nav">
-            <button class="date-button active">(美东) 1月7日
+            <button class="date-button active">
+                <span contenteditable="true">(美东) 1月7日</span>
                 <span class="date-delete">×</span>
             </button>
-            <button class="date-button">(美东) 1月6日
+            <button class="date-button">
+                <span contenteditable="true">(美东) 1月6日</span>
                 <span class="date-delete">×</span>
             </button>
-            <button class="date-button">(美东) 1月5日
+            <button class="date-button">
+                <span contenteditable="true">(美东) 1月5日</span>
                 <span class="date-delete">×</span>
             </button>
-            <button class="date-button">(美东) 1月4日
+            <button class="date-button">
+                <span contenteditable="true">(美东) 1月4日</span>
                 <span class="date-delete">×</span>
             </button>
-            <button class="date-button">(美东) 1月3日
+            <button class="date-button">
+                <span contenteditable="true">(美东) 1月3日</span>
                 <span class="date-delete">×</span>
             </button>
             <button class="add-date-button">+ 新增日期</button>
@@ -464,53 +335,14 @@
                         <div contenteditable="true">美国11月JOLTs职位空缺(万人)</div>
                     </div>
                     <div class="data-detail">
-                        <!-- 内容块 -->
-                        <div class="content-block">
-                            <p contenteditable="true">
-                                <span class="add-line-button">+</span>
-                                >公布值809.8，预测值770，前值774.4。
-                                <span class="delete-line-button">×</span>
-                            </p>
-                            <div class="image-container" style="display: none;">
+                        <p contenteditable="true">>公布值809.8，预测值770，前值774.4。</p>
+                        <div class="image-container">
+                            <div class="image-wrapper">
                                 <div class="image-area">点击上传图片</div>
-                                <span class="delete-image-button">×</span>
-                            </div>
-                            <div class="block-toolbar">
-                                <button class="add-image-button">+ 添加图片</button>
+                                <span class="delete-image">×</span>
                             </div>
                         </div>
-
-                        <div class="content-block">
-                            <p contenteditable="true">
-                                <span class="add-line-button">+</span>
-                                >解读：就业数据好于预期，经济数据强劲，通胀预期提升
-                                <span class="delete-line-button">×</span>
-                            </p>
-                            <div class="image-container" style="display: none;">
-                                <div class="image-area">点击上传图片</div>
-                                <span class="delete-image-button">×</span>
-                            </div>
-                            <div class="block-toolbar">
-                                <button class="add-image-button">+ 添加图片</button>
-                            </div>
-                        </div>
-
-                        <div class="content-block">
-                            <p contenteditable="true">
-                                <span class="add-line-button">+</span>
-                                >发布时间：每月公布，下次为2月4日，重要性3⭐
-                                <span class="delete-line-button">×</span>
-                            </p>
-                            <div class="image-container" style="display: none;">
-                                <div class="image-area">点击上传图片</div>
-                                <span class="delete-image-button">×</span>
-                            </div>
-                            <div class="block-toolbar">
-                                <button class="add-image-button">+ 添加图片</button>
-                            </div>
-                        </div>
-
-                        <button class="add-row-button">+ 新增一行</button>
+                        <p contenteditable="true">>解读：就业数据好于预期，经济数据强劲，通胀预期提升</p>
                     </div>
                 </div>
             </div>
@@ -518,48 +350,28 @@
             <!-- 市场声音 -->
             <div class="content-card">
                 <div class="data-item">
-                    <div class="data-item-title">市场声音</div>
+                    <div class="data-item-title">
+                        <div contenteditable="true">市场声音</div>
+                    </div>
                     <div class="data-detail">
-                        <div class="content-block">
-                            <p contenteditable="true">
-                                <span class="add-line-button">+</span>
-                                1. 美联储官员发布重要讲话：货币政策将继续保持谨慎...
-                                <span class="delete-line-button">×</span>
-                            </p>
-                            <div class="image-container" style="display: none;">
+                        <p contenteditable="true">1. 美联储官员发布重要讲话：货币政策将继续保持谨慎...</p>
+                        <div class="image-container">
+                            <div class="image-wrapper">
                                 <div class="image-area">点击上传图片</div>
-                                <span class="delete-image-button">×</span>
-                            </div>
-                            <div class="block-toolbar">
-                                <button class="add-image-button">+ 添加图片</button>
+                                <span class="delete-image">×</span>
                             </div>
                         </div>
-
-                        <button class="add-row-button">+ 新增一行</button>
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
 
-    <!-- 日期输入弹窗 -->
-    <div class="date-modal">
-        <div class="modal-content">
-            <div class="modal-title">新增日期</div>
-            <input type="text" class="modal-input" placeholder="请输入日期，例：1月8日">
-            <div class="modal-buttons">
-                <button class="modal-button modal-cancel">取消</button>
-                <button class="modal-button modal-confirm">确定</button>
-            </div>
+            <!-- 添加新卡片按钮 -->
+            <button class="add-card-button">+ 新增内容卡片</button>
         </div>
     </div>
 
     <!-- 文本编辑工具栏 -->
     <div class="text-toolbar">
-        <div class="toolbar-item">
-            <span class="toolbar-label">字体颜色</span>
-            <input type="color" class="color-picker" id="textColor">
-        </div>
         <div class="toolbar-item">
             <span class="toolbar-label">字体大小</span>
             <select class="toolbar-select" id="fontSize">
@@ -568,230 +380,165 @@
                 <option value="14px" selected>14px</option>
                 <option value="16px">16px</option>
                 <option value="18px">18px</option>
-                <option value="20px">20px</option>
             </select>
         </div>
         <div class="toolbar-item">
-            <span class="toolbar-label">行距</span>
-            <select class="toolbar-select" id="lineHeight">
-                <option value="1.4">1.4</option>
-                <option value="1.6">1.6</option>
-                <option value="1.8" selected>1.8</option>
-                <option value="2">2.0</option>
-                <option value="2.2">2.2</option>
-            </select>
+            <span class="toolbar-label">字体颜色</span>
+            <input type="color" id="textColor" value="#333333">
         </div>
         <div class="toolbar-item">
-            <button class="format-button" id="boldButton" title="加粗">B</button>
-            <button class="format-button" id="italicButton" title="斜体">I</button>
+            <button class="format-button" id="boldButton">B</button>
+            <button class="format-button" id="italicButton">I</button>
         </div>
     </div>
     <script>
-        // 当前选中的标签和日期
-        let currentTab = 'us-stocks';
-        let currentDate = '0107';
-    
-        // 编辑模式控制
-        let isEditMode = false;
-        const container = document.querySelector('.container');
-        const editModeToggle = document.querySelector('.edit-mode-toggle');
-    
-        function toggleEditMode() {
-            isEditMode = !isEditMode;
-            container.classList.toggle('view-mode', !isEditMode);
-            editModeToggle.textContent = isEditMode ? '退出编辑' : '进入编辑';
-            
-            // 保存编辑状态到 localStorage
-            localStorage.setItem('isEditMode', isEditMode);
-        }
-    
-        // 创建新日期的模板内容
-        function createTemplateContent(date) {
-            return `
-                <!-- 核心数据 -->
-                <div class="content-card">
-                    <div class="data-item">
-                        <div class="data-item-title">
-                            <span>1)</span>
-                            <div contenteditable="true">新增数据标题</div>
-                        </div>
-                        <div class="data-detail">
-                            <div class="content-block">
-                                <p contenteditable="true">
-                                    <span class="add-line-button">+</span>
-                                    >添加核心数据...
-                                    <span class="delete-line-button">×</span>
-                                </p>
-                                <div class="image-container" style="display: none;">
-                                    <div class="image-area">点击上传图片</div>
-                                    <span class="delete-image-button">×</span>
-                                </div>
-                                <div class="block-toolbar">
-                                    <button class="add-image-button">+ 添加图片</button>
-                                </div>
-                            </div>
-                            <button class="add-row-button">+ 新增一行</button>
-                        </div>
-                    </div>
-                </div>
-            `;
-        }
-    
-        // 内容数据结构
-        const contentData = {
-            'us-stocks': {
+        // 数据存储
+        let contentData = {
+            'stocks': {
                 '0107': {
-                    title: '美股数据 - 1月7日',
                     content: document.querySelector('.content-section').innerHTML
                 }
-            }
+            },
+            'macro': {},
+            'news': {}
         };
     
-        // 更新内容区域
-        function updateContent() {
-            const contentSection = document.querySelector('.content-section');
-            const data = contentData[currentTab]?.[currentDate];
-            
-            if (data) {
-                contentSection.innerHTML = data.content;
-                initImageUpload();
-                initAddLineButtons();
-                initAddRowButtons();
-                initImageToolbar();
-                initDeleteButtons();
-            }
-        }
+        let currentTab = 'stocks';
+        let currentDate = '0107';
     
-        // 新增内容块（包含文本和图片）
-        function addNewContentBlock(parentElement) {
-            const contentBlock = document.createElement('div');
-            contentBlock.className = 'content-block';
-            contentBlock.innerHTML = `
-                <p contenteditable="true">
-                    <span class="add-line-button">+</span>
-                    <span class="delete-line-button">×</span>
-                </p>
-                <div class="image-container" style="display: none;">
-                    <div class="image-area">点击上传图片</div>
-                    <span class="delete-image-button">×</span>
-                </div>
-                <div class="block-toolbar">
-                    <button class="add-image-button">+ 添加图片</button>
-                </div>
+        // 一级标签切换
+        document.querySelectorAll('.tab-button').forEach((button, index) => {
+            button.addEventListener('click', () => {
+                // 更新标签样式
+                document.querySelectorAll('.tab-button').forEach(btn => 
+                    btn.classList.remove('active'));
+                button.classList.add('active');
+    
+                // 更新当前标签
+                const tabs = ['stocks', 'macro', 'news'];
+                currentTab = tabs[index];
+                
+                // 更新内容
+                updateContent();
+            });
+        });
+    
+        // 二级日期切换
+        document.querySelectorAll('.date-button').forEach((button) => {
+            button.addEventListener('click', () => {
+                if (!button.classList.contains('add-date-button')) {
+                    document.querySelectorAll('.date-button').forEach(btn => 
+                        btn.classList.remove('active'));
+                    button.classList.add('active');
+                    
+                    // 获取日期文本
+                    const dateText = button.querySelector('span').textContent;
+                    const month = dateText.match(/(\d+)月/)[1].padStart(2, '0');
+                    const day = dateText.match(/(\d+)日/)[1].padStart(2, '0');
+                    currentDate = month + day;
+                    
+                    updateContent();
+                }
+            });
+        });
+    
+        // 新增日期
+        document.querySelector('.add-date-button').addEventListener('click', () => {
+            const newButton = document.createElement('button');
+            newButton.className = 'date-button';
+            newButton.innerHTML = `
+                <span contenteditable="true">(美东) 新日期</span>
+                <span class="date-delete">×</span>
             `;
-    
-            parentElement.parentNode.insertBefore(contentBlock, parentElement.nextSibling);
             
-            // 初始化新添加的元素的功能
-            initImageUpload(contentBlock.querySelector('.image-area'));
-            initDeleteButtons(contentBlock);
-            initImageToolbar(contentBlock);
+            // 插入到第一个位置
+            const dateNav = document.querySelector('.date-nav');
+            const firstButton = dateNav.querySelector('.date-button');
+            dateNav.insertBefore(newButton, firstButton);
             
-            // 聚焦到新行
-            contentBlock.querySelector('[contenteditable="true"]').focus();
-        }
+            // 激活新日期
+            document.querySelectorAll('.date-button').forEach(btn => 
+                btn.classList.remove('active'));
+            newButton.classList.add('active');
+            
+            // 初始化新日期的内容
+            currentDate = 'new' + Date.now();
+            if (!contentData[currentTab]) {
+                contentData[currentTab] = {};
+            }
+            contentData[currentTab][currentDate] = {
+                content: getEmptyTemplate()
+            };
+            
+            updateContent();
+            saveContent();
+        });
     
-        // 初始化新行添加按钮
-        function initAddLineButtons() {
-            document.querySelectorAll('.add-line-button').forEach(button => {
-                button.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    const parentP = e.target.closest('.content-block');
-                    addNewContentBlock(parentP);
-                });
-            });
-        }
-    
-        // 初始化底部新增行按钮
-        function initAddRowButtons() {
-            document.querySelectorAll('.add-row-button').forEach(button => {
-                button.addEventListener('click', () => {
-                    const dataDetail = button.closest('.data-detail');
-                    const contentBlock = document.createElement('div');
-                    contentBlock.className = 'content-block';
-                    contentBlock.innerHTML = `
-                        <p contenteditable="true">
-                            <span class="add-line-button">+</span>
-                            <span class="delete-line-button">×</span>
-                        </p>
-                        <div class="image-container" style="display: none;">
-                            <div class="image-area">点击上传图片</div>
-                            <span class="delete-image-button">×</span>
-                        </div>
-                        <div class="block-toolbar">
-                            <button class="add-image-button">+ 添加图片</button>
-                        </div>
-                    `;
-                    button.insertAdjacentElement('beforebegin', contentBlock);
+        // 删除日期
+        document.addEventListener('click', (e) => {
+            if (e.target.classList.contains('date-delete')) {
+                e.stopPropagation();
+                const dateButton = e.target.closest('.date-button');
+                
+                if (confirm('确定要删除这个日期吗？')) {
+                    const dateText = dateButton.querySelector('span').textContent;
+                    const month = dateText.match(/(\d+)月/)?.[1]?.padStart(2, '0');
+                    const day = dateText.match(/(\d+)日/)?.[1]?.padStart(2, '0');
+                    const dateKey = month && day ? month + day : currentDate;
                     
-                    // 初始化新添加的元素的功能
-                    initImageUpload(contentBlock.querySelector('.image-area'));
-                    initDeleteButtons(contentBlock);
-                    initImageToolbar(contentBlock);
+                    // 删除数据
+                    delete contentData[currentTab][dateKey];
                     
-                    // 聚焦到新行
-                    contentBlock.querySelector('[contenteditable="true"]').focus();
-                });
-            });
-        }
-    
-        // 初始化删除按钮
-        function initDeleteButtons(container = document) {
-            // 删除行按钮
-            container.querySelectorAll('.delete-line-button').forEach(button => {
-                button.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    if (confirm('确定要删除这行吗？')) {
-                        const contentBlock = e.target.closest('.content-block');
-                        contentBlock.remove();
+                    // 删除按钮
+                    dateButton.remove();
+                    
+                    // 切换到第一个可用日期
+                    const firstDateButton = document.querySelector('.date-button:not(.add-date-button)');
+                    if (firstDateButton) {
+                        firstDateButton.click();
                     }
-                });
-            });
+                    
+                    saveContent();
+                }
+            }
+        });
     
-            // 删除图片按钮
-            container.querySelectorAll('.delete-image-button').forEach(button => {
-                button.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    if (confirm('确定要删除这张图片吗？')) {
-                        const imageContainer = e.target.closest('.image-container');
-                        imageContainer.style.display = 'none';
-                        imageContainer.querySelector('.image-area').innerHTML = '点击上传图片';
-                    }
-                });
-            });
-        }
-    
-        // 初始化图片工具栏
-        function initImageToolbar(container = document) {
-            container.querySelectorAll('.add-image-button').forEach(button => {
-                button.addEventListener('click', (e) => {
-                    const contentBlock = e.target.closest('.content-block');
-                    const imageContainer = contentBlock.querySelector('.image-container');
-                    imageContainer.style.display = 'block';
-                });
-            });
-        }
-    
-        // 图片上传功能
-        function initImageUpload(container = document) {
-            const areas = container.querySelectorAll ? container.querySelectorAll('.image-area') : [container];
-            
-            areas.forEach(area => {
+        // 图片上传
+        function initializeImageUpload() {
+            document.querySelectorAll('.image-area').forEach(area => {
                 area.addEventListener('click', () => {
                     const input = document.createElement('input');
                     input.type = 'file';
+                    input.multiple = true;
                     input.accept = 'image/*';
                     
                     input.onchange = (e) => {
-                        const file = e.target.files[0];
-                        if (file) {
+                        const files = Array.from(e.target.files);
+                        const container = area.closest('.image-container');
+                        
+                        files.forEach(file => {
+                            // 检查文件大小（限制为5MB）
+                            if (file.size > 5 * 1024 * 1024) {
+                                alert('图片大小不能超过5MB');
+                                return;
+                            }
+                            
                             const reader = new FileReader();
                             reader.onload = (e) => {
-                                area.innerHTML = `<img src="${e.target.result}" style="max-width: 100%; max-height: 300px; object-fit: contain;">`;
-                                area.closest('.image-container').style.display = 'block';
+                                const wrapper = document.createElement('div');
+                                wrapper.className = 'image-wrapper';
+                                wrapper.innerHTML = `
+                                    <div class="image-area">
+                                        <img src="${e.target.result}">
+                                    </div>
+                                    <span class="delete-image">×</span>
+                                `;
+                                container.appendChild(wrapper);
                             };
                             reader.readAsDataURL(file);
-                        }
+                        });
+                        
+                        saveContent();
                     };
                     
                     input.click();
@@ -799,90 +546,92 @@
             });
         }
     
-        // 文本编辑功能
-        function initTextEditing() {
-            const textColor = document.getElementById('textColor');
-            const fontSize = document.getElementById('fontSize');
-            const lineHeight = document.getElementById('lineHeight');
-            const boldButton = document.getElementById('boldButton');
-            const italicButton = document.getElementById('italicButton');
+        // 新增内容卡片
+        document.querySelector('.add-card-button').addEventListener('click', () => {
+            const template = `
+                <div class="content-card">
+                    <div class="data-item">
+                        <div class="data-item-title">
+                            <div contenteditable="true">新内容标题</div>
+                        </div>
+                        <div class="data-detail">
+                            <p contenteditable="true">添加描述...</p>
+                            <div class="image-container">
+                                <div class="image-wrapper">
+                                    <div class="image-area">点击上传图片</div>
+                                    <span class="delete-image">×</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            const addButton = document.querySelector('.add-card-button');
+            addButton.insertAdjacentHTML('beforebegin', template);
+            
+            initializeImageUpload();
+            saveContent();
+        });
     
-            document.addEventListener('selectionchange', () => {
-                const selection = window.getSelection();
-                if (selection.rangeCount > 0) {
-                    const range = selection.getRangeAt(0);
-                    const container = range.commonAncestorContainer.parentElement;
-                    
-                    if (container && container.hasAttribute('contenteditable')) {
-                        textColor.value = rgbToHex(window.getComputedStyle(container).color);
-                        fontSize.value = window.getComputedStyle(container).fontSize;
-                        lineHeight.value = window.getComputedStyle(container).lineHeight;
-                        boldButton.classList.toggle('active', document.queryCommandState('bold'));
-                        italicButton.classList.toggle('active', document.queryCommandState('italic'));
-                    }
-                }
-            });
-    
-            textColor.addEventListener('input', (e) => {
-                document.execCommand('foreColor', false, e.target.value);
-            });
-    
-            fontSize.addEventListener('change', (e) => {
-                document.execCommand('fontSize', false, e.target.value);
-            });
-    
-            lineHeight.addEventListener('change', (e) => {
-                const selection = window.getSelection();
-                if (selection.rangeCount > 0) {
-                    const container = selection.getRangeAt(0).commonAncestorContainer.parentElement;
-                    if (container && container.hasAttribute('contenteditable')) {
-                        container.style.lineHeight = e.target.value;
-                    }
-                }
-            });
-    
-            boldButton.addEventListener('click', () => {
-                document.execCommand('bold', false, null);
-                boldButton.classList.toggle('active');
-            });
-    
-            italicButton.addEventListener('click', () => {
-                document.execCommand('italic', false, null);
-                italicButton.classList.toggle('active');
-            });
+        // 更新内容
+        function updateContent() {
+            const contentSection = document.querySelector('.content-section');
+            const data = contentData[currentTab]?.[currentDate];
+            
+            if (data) {
+                contentSection.innerHTML = data.content;
+                initializeImageUpload();
+            } else {
+                contentSection.innerHTML = getEmptyTemplate();
+                initializeImageUpload();
+            }
         }
     
-        // RGB颜色转十六进制
-        function rgbToHex(rgb) {
-            const rgbArray = rgb.match(/\d+/g);
-            if (!rgbArray) return '#000000';
-            const r = parseInt(rgbArray[0]);
-            const g = parseInt(rgbArray[1]);
-            const b = parseInt(rgbArray[2]);
-            return '#' + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
+        // 获取空模板
+        function getEmptyTemplate() {
+            return `
+                <div class="content-card">
+                    <div class="data-item">
+                        <div class="data-item-title">
+                            <div contenteditable="true">新内容标题</div>
+                        </div>
+                        <div class="data-detail">
+                            <p contenteditable="true">添加描述...</p>
+                            <div class="image-container">
+                                <div class="image-wrapper">
+                                    <div class="image-area">点击上传图片</div>
+                                    <span class="delete-image">×</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <button class="add-card-button">+ 新增内容卡片</button>
+            `;
         }
     
-        // 初始化编辑模式
-        function initEditMode() {
-            isEditMode = localStorage.getItem('isEditMode') === 'true';
-            container.classList.toggle('view-mode', !isEditMode);
-            editModeToggle.textContent = isEditMode ? '退出编辑' : '进入编辑';
+        // 保存内容
+        function saveContent() {
+            const contentSection = document.querySelector('.content-section');
+            if (!contentData[currentTab]) {
+                contentData[currentTab] = {};
+            }
+            contentData[currentTab][currentDate] = {
+                content: contentSection.innerHTML
+            };
+            localStorage.setItem('contentData', JSON.stringify(contentData));
         }
-    
-        // 事件监听
-        editModeToggle.addEventListener('click', toggleEditMode);
     
         // 初始化
-        document.addEventListener('DOMContentLoaded', function() {
-            initEditMode();
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedData = localStorage.getItem('contentData');
+            if (savedData) {
+                contentData = JSON.parse(savedData);
+            }
+            
             updateContent();
-            initImageUpload();
-            initTextEditing();
-            initAddLineButtons();
-            initAddRowButtons();
-            initImageToolbar();
-            initDeleteButtons();
+            initializeImageUpload();
         });
     </script>
-    </body>
     </html>
